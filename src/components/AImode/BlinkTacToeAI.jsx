@@ -62,7 +62,7 @@ const GameBoard = ({
           onClick={restartGameBoard}
           className="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition"
         >
-          Restart
+          Play Again
         </button>
         <button
           onClick={exitToHome}

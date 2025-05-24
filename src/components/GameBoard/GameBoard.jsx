@@ -24,7 +24,10 @@ const GameBoard = ({
         ) : null}
       </p>
 
-      <div className="grid grid-cols-3 gap-2 w-full max-w-sm mx-auto" style={{ aspectRatio: "1 / 1" }}>
+      <div
+        className="grid grid-cols-3 gap-2 w-full max-w-sm mx-auto"
+        style={{ aspectRatio: "1 / 1" }}
+      >
         {board.map((cell, idx) => (
           <button
             key={idx}
@@ -73,7 +76,7 @@ const GameBoard = ({
           onClick={restartGameBoard}
           className="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition"
         >
-          Restart
+          Play Again
         </button>
         <button
           onClick={exitToHome}
