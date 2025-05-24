@@ -82,9 +82,9 @@ const GameBoard = ({
         )}
         {winner !== null && (
           <p className="text-green-500 font-bold text-xl">
-            {winner === 1
+            {winner === 0
               ? "Player 1 Wins!"
-              : winner === 2
+              : winner === 1
               ? "AI Wins!"
               : "It's a Draw!"}
           </p>
@@ -111,18 +111,16 @@ const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
       [0, 4, 8],
       [2, 4, 6],
     ];
-    const emojiSet = playerEmojis[playerIndex].map((e) => e.index);
+    const positions = playerEmojis[playerIndex].map((e) => e.index);
     return winPatterns.some((pattern) =>
-      pattern.every((i) => emojiSet.includes(i))
+      pattern.every((pos) => positions.includes(pos))
     );
   };
 
   const handlePlayerClick = (index) => {
-    if (board[index] || winner || currentPlayer !== 0) return;
-
+    if (board[index] || winner !== null || currentPlayer !== 0) return;
     const used = playerEmojis[0].map((e) => e.emoji);
     const emoji = generateRandomEmoji(playerCategories[0], used);
-
     const updatedBoard = [...board];
     const updatedEmojis = [...playerEmojis];
     const current = updatedEmojis[0];
@@ -139,6 +137,8 @@ const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
     setPlayerEmojis(updatedEmojis);
 
     if (checkWin(0)) {
+      setWinner(0);
+    } else if (updatedBoard.every((cell) => cell !== null)) {
       setWinner(2);
     } else {
       setCurrentPlayer(1);
@@ -146,14 +146,14 @@ const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
   };
 
   useEffect(() => {
-    if (currentPlayer === 1 && !winner) {
+    if (currentPlayer === 1 && winner === null) {
       const timer = setTimeout(() => {
         const emptyIndices = board
           .map((val, idx) => (val === null ? idx : null))
           .filter((v) => v !== null);
 
         if (emptyIndices.length === 0) {
-          setCurrentPlayer(0);
+          setWinner(2);
           return;
         }
 
@@ -179,6 +179,8 @@ const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
 
         if (checkWin(1)) {
           setWinner(1);
+        } else if (updatedBoard.every((cell) => cell !== null)) {
+          setWinner(2);
         } else {
           setCurrentPlayer(0);
         }
@@ -211,7 +213,6 @@ const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
           colors={["#8b5cf6", "#a78bfa", "#7c3aed", "#c4b5fd"]}
         />
       )}
-
       <GameBoard
         board={board}
         onCellClick={handlePlayerClick}
