@@ -7,7 +7,7 @@ A twist on the classic Tic Tac Toe — now with emojis, vanishing moves, AI mode
 ## 🚀 Live Demo
 
 👉 [Play Blink Tac Toe](#)  
-📦 [GitHub Repo](#)
+📦 [GitHub Repo](https://github.com/Amruthraj-dev/TicTacToe)
 
 ---
 
