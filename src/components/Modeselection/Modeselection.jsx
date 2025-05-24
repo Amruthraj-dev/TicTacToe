@@ -28,9 +28,9 @@ const ModeSelection = ({ setGameMode }) => {
 </button>
 
       </div>
-      <div className="p-4 bg-cyan-300/70 dark:bg-yellow-200 rounded-md text-black dark:text-white">
+      <div className="p-4 bg-cyan-300/70 dark:bg-cyan-400/70 rounded-md text-black dark:text-white">
 
-        <h2 className="text-lg text-center font-semibold mb-4 text-black dark:text-white">
+        <h2 className="text-lg text-center font-semibold mb-4 text-black dark:text-gray-200">
           How to Play
         </h2>
         <ol className="list-decimal pl-6 leading-8 text-black dark:text-white">
