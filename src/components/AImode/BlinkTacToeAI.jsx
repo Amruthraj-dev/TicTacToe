@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import Confetti from "react-confetti";
 
-import GameBoard from "../GameBoard/GameBoard";
-
 const categories = {
   Animals: ["🐶", "🐱", "🐵", "🐰"],
   Food: ["🍕", "🍟", "🍔", "🍩"],
@@ -19,13 +17,89 @@ const generateRandomEmoji = (category, usedEmojis = []) => {
     : options[Math.floor(Math.random() * options.length)];
 };
 
+const GameBoard = ({
+  board,
+  onCellClick,
+  playerCategories,
+  currentPlayer,
+  winner,
+  restartGameBoard,
+  exitToHome,
+  darkMode,
+}) => {
+  return (
+    <div className="flex flex-col items-center gap-6 w-full max-w-md mx-auto p-4">
+      <div
+        className="grid grid-cols-3 gap-2 w-full max-w-sm mx-auto"
+        style={{ aspectRatio: "1 / 1" }}
+      >
+        {board.map((cell, idx) => (
+          <button
+            key={idx}
+            className={`flex items-center justify-center rounded
+              text-4xl sm:text-5xl min-h-[64px] aspect-square
+              transition duration-200 ease-in-out
+              ${
+                cell
+                  ? darkMode
+                    ? "bg-purple-700 text-white"
+                    : "bg-purple-300 text-black"
+                  : darkMode
+                  ? "bg-gray-800 hover:bg-purple-700 text-white"
+                  : "bg-gray-200 hover:bg-purple-300 text-black"
+              }
+            `}
+            onClick={() => onCellClick(idx)}
+            disabled={!!cell || winner !== null}
+            aria-label={`Cell ${idx + 1}`}
+          >
+            {cell?.emoji}
+          </button>
+        ))}
+      </div>
+      <div className="flex gap-4">
+        <button
+          onClick={restartGameBoard}
+          className="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition"
+        >
+          Restart
+        </button>
+        <button
+          onClick={exitToHome}
+          className="px-4 py-2 rounded bg-gray-500 text-white hover:bg-gray-600 transition"
+        >
+          Exit
+        </button>
+      </div>
+      <div className="text-center text-lg font-semibold mt-2">
+        {winner === null && (
+          <p>
+            Current turn:{" "}
+            <span className="font-bold">
+              {currentPlayer === 0 ? "Player 1" : "AI"}
+            </span>
+          </p>
+        )}
+        {winner !== null && (
+          <p className="text-green-500 font-bold text-xl">
+            {winner === 1
+              ? "Player 1 Wins!"
+              : winner === 2
+              ? "AI Wins!"
+              : "It's a Draw!"}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [playerEmojis, setPlayerEmojis] = useState([[], []]);
-  const [currentPlayer, setCurrentPlayer] = useState(0); 
+  const [currentPlayer, setCurrentPlayer] = useState(0);
   const [winner, setWinner] = useState(null);
 
-  // Check win
   const checkWin = (playerIndex) => {
     const winPatterns = [
       [0, 1, 2],
@@ -43,7 +117,6 @@ const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
     );
   };
 
- 
   const handlePlayerClick = (index) => {
     if (board[index] || winner || currentPlayer !== 0) return;
 
@@ -66,14 +139,12 @@ const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
     setPlayerEmojis(updatedEmojis);
 
     if (checkWin(0)) {
-  setWinner(2); 
-} else {
-  setCurrentPlayer(1);
-}
-
+      setWinner(2);
+    } else {
+      setCurrentPlayer(1);
+    }
   };
 
- 
   useEffect(() => {
     if (currentPlayer === 1 && !winner) {
       const timer = setTimeout(() => {
@@ -128,32 +199,29 @@ const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
     <div
       className={
         darkMode
-          ? "bg-gray-900 text-white min-h-screen"
-          : "bg-white text-black min-h-screen"
+          ? "bg-gray-900 text-white min-h-screen flex flex-col justify-center"
+          : "bg-white text-black min-h-screen flex flex-col justify-center"
       }
     >
- 
-
-      <div className="flex flex-col items-center gap-8 p-6">
-        {winner !== null && (
-          <Confetti
-            recycle={false}
-            numberOfPieces={300}
-            gravity={0.3}
-            colors={["#8b5cf6", "#a78bfa", "#7c3aed", "#c4b5fd"]}
-          />
-        )}
-
-        <GameBoard
-          board={board}
-          onCellClick={handlePlayerClick}
-          playerCategories={playerCategories}
-          currentPlayer={currentPlayer}
-          winner={winner}
-          restartGameBoard={restartGameBoard}
-          exitToHome={exitToHome}
+      {winner !== null && (
+        <Confetti
+          recycle={false}
+          numberOfPieces={300}
+          gravity={0.3}
+          colors={["#8b5cf6", "#a78bfa", "#7c3aed", "#c4b5fd"]}
         />
-      </div>
+      )}
+
+      <GameBoard
+        board={board}
+        onCellClick={handlePlayerClick}
+        playerCategories={playerCategories}
+        currentPlayer={currentPlayer}
+        winner={winner}
+        restartGameBoard={restartGameBoard}
+        exitToHome={exitToHome}
+        darkMode={darkMode}
+      />
     </div>
   );
 };
