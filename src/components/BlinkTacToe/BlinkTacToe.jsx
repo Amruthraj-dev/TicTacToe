@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "../Navbar/Navbar";
 import ModeSelection from "../Modeselection/Modeselection";
 import CategorySelection from "../CategorySelection/CategorySelection";
 import GameBoard from "../GameBoard/GameBoard";
 import BlinkTacToeAI from "../AImode/BlinkTacToeAI";
 import Confetti from "react-confetti";
+import ScoreCard from "../ScoreCard/ScoreCard";
 
 const categories = {
   Animals: ["🐶", "🐱", "🐵", "🐰"],
@@ -32,6 +33,11 @@ const BlinkTacToe = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [gameMode, setGameMode] = useState(null);
   const [startGame, setStartGame] = useState(false);
+  const [scores, setScores] = useState({ player1: 0, player2: 0 });
+
+  const moveSound = useRef(null);
+  const winSoundP1 = useRef(null);
+  const winSoundP2 = useRef(null);
 
   const resetGame = () => {
     setBoard(Array(9).fill(null));
@@ -41,6 +47,7 @@ const BlinkTacToe = () => {
     setPlayerCategories([null, null]);
     setGameMode(null);
     setStartGame(false);
+    setScores({ player1: 0, player2: 0 });
   };
 
   const restartGameBoard = () => {
@@ -62,13 +69,13 @@ const BlinkTacToe = () => {
       [2, 4, 6],
     ];
     const emojiSet = playerEmojis[playerIndex].map((e) => e.index);
-    return winPatterns.some((pattern) =>
-      pattern.every((i) => emojiSet.includes(i))
-    );
+    return winPatterns.some((pattern) => pattern.every((i) => emojiSet.includes(i)));
   };
 
   const handleClick = (index) => {
     if (board[index] || winner || playerCategories.some((c) => !c)) return;
+
+    moveSound.current?.play();
 
     const used = playerEmojis[currentPlayer].map((e) => e.emoji);
     const emoji = generateRandomEmoji(playerCategories[currentPlayer], used);
@@ -89,6 +96,13 @@ const BlinkTacToe = () => {
     setPlayerEmojis(updatedEmojis);
 
     if (checkWin(currentPlayer)) {
+      if (currentPlayer === 0) {
+        winSoundP1.current?.play();
+        setScores((prev) => ({ ...prev, player1: prev.player1 + 1 }));
+      } else {
+        winSoundP2.current?.play();
+        setScores((prev) => ({ ...prev, player2: prev.player2 + 1 }));
+      }
       setWinner(currentPlayer + 1);
     } else {
       setCurrentPlayer(1 - currentPlayer);
@@ -100,18 +114,12 @@ const BlinkTacToe = () => {
     setStartGame(false);
   };
 
-  console.log("gameMode:", gameMode);
-  console.log("startGame:", startGame);
-  console.log("playerCategories:", playerCategories);
-
   return (
-    <div
-      className={
-        darkMode
-          ? "bg-gray-900 text-white min-h-screen"
-          : "bg-white text-black min-h-screen"
-      }
-    >
+    <div className={darkMode ? "bg-gray-900 text-white min-h-screen" : "bg-white text-black min-h-screen"}>
+      <audio ref={moveSound} src="/move.mp3" preload="auto" />
+      <audio ref={winSoundP1} src="/player1wins.mp3" preload="auto" />
+      <audio ref={winSoundP2} src="/player2wins.mp3" preload="auto" />
+
       {winner !== null && (
         <Confetti
           recycle={false}
@@ -140,14 +148,10 @@ const BlinkTacToe = () => {
               setPlayerCategories={setPlayerCategories}
               gameMode={gameMode}
             />
-
             {playerCategories[0] && playerCategories[1] && (
               <button
                 onClick={() => setStartGame(true)}
-                className="px-6 py-3 rounded text-white
-    bg-gradient-to-r from-indigo-400 via-purple-500 to-violet-600
-    hover:from-violet-700 hover:via-purple-600 hover:to-indigo-500
-    transition-all duration-300 shadow-md mt-15"
+                className="px-6 py-3 rounded text-white bg-gradient-to-r from-indigo-400 via-purple-500 to-violet-600 hover:from-violet-700 hover:via-purple-600 hover:to-indigo-500 transition-all duration-300 shadow-md mt-15"
               >
                 Start Game
               </button>
@@ -156,23 +160,33 @@ const BlinkTacToe = () => {
         )}
 
         {startGame && gameMode === "ai" && (
-          <BlinkTacToeAI
-            playerCategories={playerCategories}
-            darkMode={darkMode}
-            exitToHome={exitToHome}
-          />
+          <div className="flex flex-col sm:flex-row gap-6 w-full max-w-5xl mx-auto px-4 sm:px-6">
+            <div className="flex-1">
+              <BlinkTacToeAI
+                playerCategories={playerCategories}
+                darkMode={darkMode}
+                exitToHome={exitToHome}
+              />
+            </div>
+            {/* No ScoreCard rendered in AI mode */}
+          </div>
         )}
 
         {startGame && gameMode === "pvp" && (
-          <GameBoard
-            board={board}
-            onCellClick={handleClick}
-            playerCategories={playerCategories}
-            currentPlayer={currentPlayer}
-            winner={winner}
-            restartGameBoard={restartGameBoard}
-            exitToHome={exitToHome}
-          />
+          <div className="flex flex-col sm:flex-row gap-6 w-full max-w-5xl mx-auto px-4 sm:px-6">
+            <div className="flex-1">
+              <GameBoard
+                board={board}
+                onCellClick={handleClick}
+                playerCategories={playerCategories}
+                currentPlayer={currentPlayer}
+                winner={winner}
+                restartGameBoard={restartGameBoard}
+                exitToHome={exitToHome}
+              />
+            </div>
+            <ScoreCard scores={scores} />
+          </div>
         )}
       </div>
     </div>
