@@ -15,6 +15,7 @@ const categories = {
   Nature: ["🌞", "🌊", "🔥", "❄️"],
 };
 
+//a random emoji that hasn't already been used
 const generateRandomEmoji = (category, usedEmojis = []) => {
   const options = categories[category];
   const available = options.filter((emoji) => !usedEmojis.includes(emoji));
@@ -72,11 +73,13 @@ const BlinkTacToe = () => {
     return winPatterns.some((pattern) => pattern.every((i) => emojiSet.includes(i)));
   };
 
+    // Handles a cell click during PvP gameplay
   const handleClick = (index) => {
     if (board[index] || winner || playerCategories.some((c) => !c)) return;
 
     moveSound.current?.play();
 
+    // Generate a new emoji for the move
     const used = playerEmojis[currentPlayer].map((e) => e.emoji);
     const emoji = generateRandomEmoji(playerCategories[currentPlayer], used);
 
@@ -84,6 +87,7 @@ const BlinkTacToe = () => {
     const updatedEmojis = [...playerEmojis];
     const current = updatedEmojis[currentPlayer];
 
+     // Limit each player to 3 emojis on the board
     if (current.length >= 3) {
       const removed = current.shift();
       if (removed.index === index) return;

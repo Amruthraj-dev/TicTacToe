@@ -31,7 +31,7 @@ const GameBoard = ({
 }) => {
   return (
     <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-6">
-      {/* Game Area */}
+    
       <div className="w-full md:w-[65%] flex flex-col items-center">
         <p className="text-base sm:text-lg font-medium mb-4 dark:text-gray-300 text-center">
           {winner === null ? (
@@ -70,7 +70,7 @@ const GameBoard = ({
           ))}
         </div>
 
-        {/* Winner Display */}
+        
         {winner !== null && (
           <motion.div
             initial={{ y: -30, opacity: 0 }}
@@ -97,7 +97,7 @@ const GameBoard = ({
           </motion.div>
         )}
 
-        {/* Scorecard for Mobile */}
+        {/* Mobile Scorecard */}
         <div className="w-full md:hidden mt-8 bg-gray-100 dark:bg-gray-700 p-4 rounded-xl shadow-xl text-center">
           <h2 className="text-lg font-bold mb-3">Score</h2>
           <div className="space-y-2 text-sm sm:text-base">
@@ -113,17 +113,12 @@ const GameBoard = ({
                 {scores[1]}
               </span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-700 dark:text-gray-300 font-semibold">Draws</span>
-              <span className="bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-gray-100 px-3 py-1 rounded-full">
-                {scores[2]}
-              </span>
-            </div>
+        
           </div>
         </div>
       </div>
 
-      {/* Scorecard for Desktop */}
+       {/* Desktop Scorecard */}
       <div className="hidden md:block w-full md:w-[30%] bg-gray-100 dark:bg-gray-700 p-6 rounded-xl shadow-xl text-center">
         <h2 className="text-xl font-bold mb-4">Score</h2>
         <div className="space-y-2 text-lg">
@@ -139,12 +134,7 @@ const GameBoard = ({
               {scores[1]}
             </span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-700 dark:text-gray-300 font-semibold">Draws</span>
-            <span className="bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-gray-100 px-3 py-1 rounded-full">
-              {scores[2]}
-            </span>
-          </div>
+        
         </div>
       </div>
     </div>
@@ -162,6 +152,7 @@ const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
   const aiGameOverSound = useRef(null);
   const moveSound = useRef(null);
   const winSound = useRef(null);
+
 
   const checkWin = (playerIndex) => {
     const winPatterns = [
@@ -188,6 +179,7 @@ const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
     const updatedEmojis = [...playerEmojis];
     const current = updatedEmojis[0];
 
+    // Remove old emoji if player already has 3
     if (current.length >= 3) {
       const removed = current.shift();
       if (removed.index === index) return;
@@ -209,6 +201,7 @@ const BlinkTacToeAI = ({ playerCategories, darkMode, exitToHome }) => {
     }
   };
 
+  // AI move logic
   useEffect(() => {
     if (currentPlayer === 1 && !winner) {
       const timer = setTimeout(() => {

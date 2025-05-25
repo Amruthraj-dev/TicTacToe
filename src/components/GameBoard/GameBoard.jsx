@@ -24,6 +24,7 @@ const GameBoard = ({
         ) : null}
       </p>
 
+ {/* Emoji grid (3x3 game board) */}
       <div
         className="grid grid-cols-3 gap-2 w-full max-w-sm"
         style={{ aspectRatio: "1 / 1" }}
